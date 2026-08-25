@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel Risk - Real-Time Transaction Telemetry</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="brand">
+                <span class="shield-icon">🛡️</span>
+                <div>
+                    <h1>SENTINEL RISK ENGINE</h1>
+                    <p class="subtitle">High-Throughput Real-Time Transaction Risk & Anomaly Scoring</p>
+                </div>
+            </div>
+            <div class="status-badges">
+                <div class="badge" id="circuit-badge">
+                    <span class="dot green"></span> CIRCUIT: <strong id="circuit-state">CLOSED</strong>
+                </div>
+                <div class="badge" id="store-badge">
+                    STORE: <strong id="store-backend">In-Memory / Redis</strong>
+                </div>
+                <div class="badge" id="ws-badge">
+                    WS: <strong id="ws-status" class="yellow">Connecting...</strong>
+                </div>
+            </div>
+        </header>
+
+        <!-- KPI Metrics Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <span class="kpi-title">TOTAL PROCESSED</span>
+                <span class="kpi-value" id="kpi-total">0</span>
+                <span class="kpi-sub">Real-time Stream</span>
+            </div>
+            <div class="kpi-card allow">
+                <span class="kpi-title">ALLOWED</span>
+                <span class="kpi-value" id="kpi-allow">0</span>
+                <span class="kpi-sub" id="kpi-allow-pct">0%</span>
+            </div>
+            <div class="kpi-card review">
+                <span class="kpi-title">IN REVIEW</span>
+                <span class="kpi-value" id="kpi-review">0</span>
+                <span class="kpi-sub" id="kpi-review-pct">0%</span>
+            </div>
+            <div class="kpi-card decline">
+                <span class="kpi-title">DECLINED</span>
+                <span class="kpi-value" id="kpi-decline">0</span>
+                <span class="kpi-sub" id="kpi-decline-pct">0%</span>
+            </div>
+            <div class="kpi-card latency">
+                <span class="kpi-title">AVG LATENCY (SLA &lt;10ms)</span>
+                <span class="kpi-value" id="kpi-latency">0.0 ms</span>
+                <span class="kpi-sub" id="kpi-p95">p95: 0.0ms | p99: 0.0ms</span>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Split -->
+        <div class="dashboard-main">
+            <!-- Left Controls & Charts -->
+            <div class="left-panel">
+                <div class="panel-card controls-card">
+                    <h3>🎮 Stream & Anomaly Controls</h3>
+                    <div class="control-group">
+                        <label for="tps-slider">Target TPS: <span id="tps-val">15</span></label>
+                        <input type="range" id="tps-slider" min="1" max="100" value="15">
+                    </div>
+                    <div class="btn-row">
+                        <button id="btn-start" class="btn btn-success">▶ Start Stream</button>
+                        <button id="btn-stop" class="btn btn-danger" disabled>⏹ Stop Stream</button>
+                    </div>
+                    <div class="divider"></div>
+                    <h4>⚡ Inject Anomaly Burst</h4>
+                    <div class="anomaly-btn-grid">
+                        <button class="btn btn-warning btn-anomaly" data-type="HIGH_AMOUNT">💰 High Amount ($10k+)</button>
+                        <button class="btn btn-warning btn-anomaly" data-type="VELOCITY_SPIKE">⚡ Velocity Burst (5+ txs)</button>
+                        <button class="btn btn-warning btn-anomaly" data-type="IMPOSSIBLE_TRAVEL">✈ Impossible Travel</button>
+                        <button class="btn btn-warning btn-anomaly" data-type="SANCTIONED_GEO">🌍 Sanctioned Geo</button>
+                    </div>
+                </div>
+
+                <div class="panel-card chart-card">
+                    <h3>📈 Live Pipeline Latency Distribution (ms)</h3>
+                    <canvas id="latencyChart" height="140"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Telemetry Stream -->
+            <div class="right-panel">
+                <div class="panel-card stream-card">
+                    <div class="stream-header">
+                        <h3>📡 Live Transaction Telemetry Feed</h3>
+                        <span class="live-indicator">LIVE</span>
+                    </div>
+                    <div class="table-container">
+                        <table id="telemetry-table">
+                            <thead>
+                                <tr>
+                                    <th>Tx ID</th>
+                                    <th>Account</th>
+                                    <th>Amount</th>
+                                    <th>Geo</th>
+                                    <th>Decision</th>
+                                    <th>Risk Score</th>
+                                    <th>Latency</th>
+                                    <th>Reason Codes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="telemetry-tbody">
+                                <!-- Dynamic rows inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
