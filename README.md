@@ -47,7 +47,7 @@
 ## 🌟 Key Engineering & Quant Risk Highlights
 
 1. **Sub-10ms End-to-End Decision Latency**:
-   - Optimized pipeline achieving $<10\text{ms}$ average total latency across deterministic pre-rule checks, rolling window feature retrieval, and vectorized XGBoost model scoring.
+   - Optimized pipeline achieving $<10\text{ms}$ average total latency across deterministic pre-rule checks, rolling window feature retrieval, and vectorized XGBoost model scoring. Measured directly by [`benchmark.py`](benchmark.py), which asserts on this SLA rather than just narrating it — see Quick Start below to run it yourself.
 
 2. **Real-Time Sliding-Window Feature Store**:
    - In-memory Redis ZSET rolling window feature store calculating real-time aggregate signals ($5\text{-min transaction velocity}$, $24\text{-hr cumulative spend}$, historical mean spend ratio) with automatic in-memory fallback.
@@ -90,12 +90,18 @@ pip install -r requirements.txt
 python ml/train_model.py
 ```
 
-### 3. Run Automated Tests & Benchmarks
+### 3. Run Automated Tests
 ```bash
 pytest tests/ -v
 ```
 
-### 4. Start Server & Open Dashboard
+### 4. Run the Latency/Throughput Benchmark
+```bash
+python benchmark.py
+```
+Runs 1,000 simulated transactions end-to-end through the real pipeline and prints throughput (TPS) and p50/p95/p99 latency — this is what backs the "sub-10ms" and "1,000+ transactions/sec" claims above, not a narrated estimate. The script asserts average latency stays under the 10ms SLA and fails loudly if it doesn't.
+
+### 5. Start Server & Open Dashboard
 ```bash
 python main.py
 ```
