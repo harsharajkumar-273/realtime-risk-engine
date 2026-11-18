@@ -1,6 +1,8 @@
 # Sentinel Risk: Real-Time Financial Transaction Risk & Fraud Streaming Engine
 
-> **A high-throughput, low-latency (<10ms) event-driven financial risk engine designed for credit card/banking transaction decisioning, real-time feature aggregation, ML anomaly scoring, resilience engineering, and live telemetry monitoring.**
+> **An event-driven financial risk engine prototype for transaction decisioning, real-time feature aggregation, ML anomaly scoring, and live telemetry monitoring — built and measured on synthetic data only.**
+
+> **Accuracy note (Nov 2026):** Sentinel is a prototype. It has never processed real transactions or run in production, and no availability figure is claimed. Latency statements below refer only to the local `benchmark.py` run described in the Quick Start.
 
 ---
 
@@ -46,8 +48,8 @@
 
 ## 🌟 Key Engineering & Quant Risk Highlights
 
-1. **Sub-10ms End-to-End Decision Latency**:
-   - Optimized pipeline achieving $<10\text{ms}$ average total latency across deterministic pre-rule checks, rolling window feature retrieval, and vectorized XGBoost model scoring. Measured directly by [`benchmark.py`](benchmark.py), which asserts on this SLA rather than just narrating it — see Quick Start below to run it yourself.
+1. **Low-Latency Decision Pipeline (local benchmark)**:
+   - The pipeline is designed for low-latency decisions across deterministic pre-rule checks, rolling window feature retrieval, and XGBoost model scoring. [`benchmark.py`](benchmark.py) runs 1,000 synthetic transactions through the pipeline locally and reports p50/p95/p99 — run it to see current numbers on your machine.
 
 2. **Real-Time Sliding-Window Feature Store**:
    - In-memory Redis ZSET rolling window feature store calculating real-time aggregate signals ($5\text{-min transaction velocity}$, $24\text{-hr cumulative spend}$, historical mean spend ratio) with automatic in-memory fallback.
@@ -69,9 +71,9 @@
 ## 💼 Resume Bullet Points
 
 - **Real-Time Transaction Risk Engine (SDE + ML)**:
-  - *Architected an event-driven financial risk engine in Python (FastAPI, Redis, XGBoost) delivering sub-10ms transaction decisioning across 1,000+ simulated transactions/sec.*
+  - *Architected an event-driven financial risk engine in Python (FastAPI, Redis, XGBoost) and measured it with an included benchmark over 1,000 simulated transactions.*
   - *Implemented a sliding-window feature store (Redis ZSETs) to compute real-time user velocity (5-min count) and 24-hr spending aggregates for dynamic anomaly scoring.*
-  - *Engineered a low-latency circuit breaker pattern to guarantee 99.99% system availability by failing back to deterministic rule sets during ML inference SLA spikes (>20ms).*
+  - *Engineered a circuit breaker pattern that keeps decisions flowing by failing back to deterministic rule sets during ML inference spikes (>20ms).*
   - *Designed an interactive WebSockets telemetry dashboard monitoring live TPS, p95/p99 latency distributions, and decision reason codes.*
 
 ---
@@ -99,7 +101,7 @@ pytest tests/ -v
 ```bash
 python benchmark.py
 ```
-Runs 1,000 simulated transactions end-to-end through the real pipeline and prints throughput (TPS) and p50/p95/p99 latency — this is what backs the "sub-10ms" and "1,000+ transactions/sec" claims above, not a narrated estimate. The script asserts average latency stays under the 10ms SLA and fails loudly if it doesn't.
+Runs 1,000 simulated transactions end-to-end through the pipeline and prints throughput (TPS) and p50/p95/p99 latency for the synthetic workload on your machine. No fixed latency or throughput figure is claimed for other environments.
 
 ### 5. Start Server & Open Dashboard
 ```bash
